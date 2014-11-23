@@ -1,4 +1,5 @@
-runAnalysis <- function(dirName){
+runAnalysis <- function(){
+  dirName <- 'UCI HAR Dataset/'
   library(reshape2)
   features <- read.table(paste(dirName, 'features.txt', sep=''))
   features <- features[,2]
