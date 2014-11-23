@@ -1,4 +1,5 @@
 runAnalysis <- function(dirName){
+  library(reshape2)
   features <- read.table(paste(dirName, 'features.txt', sep=''))
   features <- features[,2]
   
@@ -16,6 +17,9 @@ runAnalysis <- function(dirName){
   colnames(X_test) <- features
   colnames(X_train) <- features
   
+  X_train <- X_train[,grepl('mean|std', names(X_train))]
+  X_test <- X_test[,grepl('mean|std', names(X_test))]
+  
   X_train$subject <- as.numeric(subject_train[,1])
   X_test$subject <- as.numeric(subject_test[,1])  
   
@@ -26,5 +30,12 @@ runAnalysis <- function(dirName){
   
   X_all <- merge(X_all, activityLabels, by.x='activity_id', by.y='activity_id')
   
+  X_all$activity_id <- NULL
+  
+  X_mean <- melt(X_all, c('subject', 'activity'))
+  X_mean <- dcast(X_mean, subject + activity ~ ..., mean)
+  X_mean <- melt(X_mean,  c('subject', 'activity'), variable.name='measurement', value.name='average')
+  X_mean$measurement <- sapply(X_mean$measurement, function(name){gsub('^t', 'time', name)})
+  write.table(X_mean, 'X_mean.txt', row.names=F)
   X_all
 }
