@@ -44,13 +44,7 @@ runAnalysis <- function(){
   X_mean <- dcast(X_mean, subject + activity ~ ..., mean)
   X_mean <- melt(X_mean,  c('subject', 'activity'), variable.name='measurement', value.name='average')
 
-  X_mean$measurement <- sapply(X_mean$measurement, function(name){gsub('^t', 'time', name)})
-  X_mean$measurement <- sapply(X_mean$measurement, function(name){gsub('^f', 'frequency', name)})
-  X_mean$measurement <- sapply(X_mean$measurement, function(name){gsub('std', 'standardDeviation', name)})
-  X_mean$measurement <- sapply(X_mean$measurement, function(name){gsub('Freq', 'Frequency', name)})
-  X_mean$measurement <- sapply(X_mean$measurement, function(name){gsub('Acc', 'Accelerometer', name)})
-  X_mean$measurement <- sapply(X_mean$measurement, function(name){gsub('Gyro', 'Gyroscope', name)})
-
   write.table(X_mean, 'X_mean.txt', row.names=F)
+  write.table(X_all, 'X_all.txt', row.names=F)
   X_all
 }
