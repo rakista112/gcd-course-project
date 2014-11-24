@@ -3,6 +3,13 @@ runAnalysis <- function(){
   library(reshape2)
   features <- read.table(paste(dirName, 'features.txt', sep=''))
   features <- features[,2]
+
+  features <- sapply(features, function(name){gsub('^t', 'time', name)})
+  features <- sapply(features, function(name){gsub('^f', 'frequency', name)})
+  features <- sapply(features, function(name){gsub('std', 'standardDeviation', name)})
+  features <- sapply(features, function(name){gsub('Freq', 'Frequency', name)})
+  features <- sapply(features, function(name){gsub('Acc', 'Accelerometer', name)})
+  features <- sapply(features, function(name){gsub('Gyro', 'Gyroscope', name)})
   
   activityLabels <- read.table(paste(dirName, 'activity_labels.txt', sep=''), col.names=c('activity_id', 'activity'))
   
@@ -18,8 +25,8 @@ runAnalysis <- function(){
   colnames(X_test) <- features
   colnames(X_train) <- features
   
-  X_train <- X_train[,grepl('mean|std', names(X_train))]
-  X_test <- X_test[,grepl('mean|std', names(X_test))]
+  X_train <- X_train[,grepl('mean|standardDeviation', names(X_train))]
+  X_test <- X_test[,grepl('mean|standardDeviation', names(X_test))]
   
   X_train$subject <- as.numeric(subject_train[,1])
   X_test$subject <- as.numeric(subject_test[,1])  
@@ -36,7 +43,14 @@ runAnalysis <- function(){
   X_mean <- melt(X_all, c('subject', 'activity'))
   X_mean <- dcast(X_mean, subject + activity ~ ..., mean)
   X_mean <- melt(X_mean,  c('subject', 'activity'), variable.name='measurement', value.name='average')
+
   X_mean$measurement <- sapply(X_mean$measurement, function(name){gsub('^t', 'time', name)})
+  X_mean$measurement <- sapply(X_mean$measurement, function(name){gsub('^f', 'frequency', name)})
+  X_mean$measurement <- sapply(X_mean$measurement, function(name){gsub('std', 'standardDeviation', name)})
+  X_mean$measurement <- sapply(X_mean$measurement, function(name){gsub('Freq', 'Frequency', name)})
+  X_mean$measurement <- sapply(X_mean$measurement, function(name){gsub('Acc', 'Accelerometer', name)})
+  X_mean$measurement <- sapply(X_mean$measurement, function(name){gsub('Gyro', 'Gyroscope', name)})
+
   write.table(X_mean, 'X_mean.txt', row.names=F)
   X_all
 }
